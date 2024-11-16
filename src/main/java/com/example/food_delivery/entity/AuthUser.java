@@ -1,5 +1,6 @@
 package com.example.food_delivery.entity;
 
+import com.example.food_delivery.enums.ROLE;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,5 +20,7 @@ public class AuthUser {
     private String password;
     @Column(unique = true, nullable = false)
     private String phoneNumber;
+    @Enumerated(EnumType.STRING)
+    private ROLE role;
 
 }
