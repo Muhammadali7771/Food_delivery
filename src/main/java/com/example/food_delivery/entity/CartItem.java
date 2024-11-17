@@ -17,6 +17,6 @@ public class CartItem {
     private Integer quantity;
     @Column(nullable = false)
     private double itemPrice;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private Cart cart;
 }

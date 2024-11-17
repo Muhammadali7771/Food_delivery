@@ -26,5 +26,6 @@ public class AuthUser {
     private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private ROLE role;
-
+    @OneToOne(mappedBy = "authUser", fetch = FetchType.LAZY)
+    private Cart cart;
 }
