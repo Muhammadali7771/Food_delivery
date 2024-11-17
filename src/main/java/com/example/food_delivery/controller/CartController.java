@@ -38,4 +38,9 @@ public class CartController {
         cartService.updateQuantity(foodId, dto);
         return ResponseEntity.noContent().build();
     }
+    @DeleteMapping("/delete-product-to-cart/{foodId}")
+    public ResponseEntity<Void> deleteFoodFromCart(@PathVariable Integer foodId){
+        cartService.removeProductFromCart(foodId);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -82,4 +82,17 @@ public class CartService {
         cart.setTotalPrice(cart.getTotalPrice() + oldQuantity * food.getPrice() - quantity * food.getPrice());
         cartItemRepository.save(cartItem);
     }
+    public void removeProductFromCart(Integer foodId) {
+        Integer currentUserId = sessionUser.getId();
+        AuthUser authUser = authUserRepository.findById(currentUserId)
+                .orElseThrow(() -> new AccessDeniedException("You are not registered!"));
+        Cart cart = authUser.getCart();
+
+        CartItem cartItem = cartItemRepository.findByCartIdAndFoodId(cart.getId(), foodId)
+                .orElseThrow(() -> new ResourceNotFoundException("product not available in your cart"));
+
+        cart.setTotalPrice(cart.getTotalPrice() - cartItem.getItemPrice());
+        cartItemRepository.delete(cartItem);
+    }
+
 }
