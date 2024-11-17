@@ -33,11 +33,11 @@ public class AuthUserController {
         return new BaseResponse<>(token);
     }
 
-    @PutMapping("/update/{id}")
+   /* @PutMapping("/update/{id}")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<String> update(@Valid @RequestBody AuthUserUpdateDto dto,
                                        @PathVariable Integer id){
         authUserService.update(dto, id);
         return new BaseResponse<>("User has been updated");
-    }
+    }*/
 }
