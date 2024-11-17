@@ -3,6 +3,7 @@ package com.example.food_delivery.service;
 import com.example.food_delivery.configuration.security.SessionUser;
 import com.example.food_delivery.dto.CartDto;
 import com.example.food_delivery.dto.CartItemRequestDto;
+import com.example.food_delivery.dto.CartItemUpdateDto;
 import com.example.food_delivery.entity.AuthUser;
 import com.example.food_delivery.entity.Cart;
 import com.example.food_delivery.entity.CartItem;
@@ -15,6 +16,8 @@ import com.example.food_delivery.repository.CartRepository;
 import com.example.food_delivery.repository.FoodRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class CartService {
@@ -58,6 +61,25 @@ public class CartService {
         cartItem.setCart(cart);
 
         cart.setTotalPrice(cart.getTotalPrice() + cartItem.getItemPrice());
+        cartItemRepository.save(cartItem);
+    }
+
+    public void updateQuantity(Integer foodId, CartItemUpdateDto dto){
+        Food food = foodRepository.findById(foodId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        Integer currentUserId = sessionUser.getId();
+        AuthUser authUser = authUserRepository.findById(currentUserId)
+                .orElseThrow(() -> new AccessDeniedException("You are not registered!"));
+        Cart cart = authUser.getCart();
+
+        CartItem cartItem = cartItemRepository.findByCartIdAndFoodId(cart.getId(), foodId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product is not available in your cart"));
+        Integer quantity = dto.quantity();
+        Integer oldQuantity = cartItem.getQuantity();
+        cartItem.setQuantity(quantity);
+        cartItem.setItemPrice(quantity * food.getPrice());
+
+        cart.setTotalPrice(cart.getTotalPrice() + oldQuantity * food.getPrice() - quantity * food.getPrice());
         cartItemRepository.save(cartItem);
     }
 }
