@@ -14,9 +14,9 @@ import java.util.Date;
 public class JwtTokenUtil {
     public static final String SECRET_KEY = "7134743777217A25432A462D4A614E645267556B58703272357538782F413F44";
 
-    public String generateToken(String username){
+    public String generateToken(String email){
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuer("https://food_delivery.uz")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
