@@ -21,7 +21,7 @@ public class AuthUserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public BaseResponse<TokenResponse> register(@RequestBody AuthUserCreateDto dto){
+    public BaseResponse<TokenResponse> register(@Valid @RequestBody AuthUserCreateDto dto){
         TokenResponse token = authUserService.save(dto);
         return new BaseResponse<>(token);
     }
