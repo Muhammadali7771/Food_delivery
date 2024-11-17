@@ -23,7 +23,7 @@ public class Category {
     @Column(nullable = false)
     private String description;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
-    private List<Food> foods;
+    private List<Food> foodList;
     @CreatedBy
     @Column(nullable = false, updatable = false)
     private Integer createdBy;
