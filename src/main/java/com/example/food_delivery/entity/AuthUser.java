@@ -2,11 +2,15 @@ package com.example.food_delivery.entity;
 
 import com.example.food_delivery.enums.ROLE;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class AuthUser {
     @Id
