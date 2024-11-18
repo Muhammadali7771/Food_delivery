@@ -79,7 +79,7 @@ public class CartService {
         cartItem.setQuantity(quantity);
         cartItem.setItemPrice(quantity * food.getPrice());
 
-        cart.setTotalPrice(cart.getTotalPrice() + oldQuantity * food.getPrice() - quantity * food.getPrice());
+        cart.setTotalPrice(cart.getTotalPrice() - oldQuantity * food.getPrice() + quantity * food.getPrice());
         cartItemRepository.save(cartItem);
     }
     public void removeProductFromCart(Integer foodId) {
