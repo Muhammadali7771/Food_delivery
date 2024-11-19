@@ -17,10 +17,8 @@ import com.example.food_delivery.repository.FoodRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
-public class CartService {
+public class CartServiceImpl implements CartService{
     private final SessionUser sessionUser;
     private final CartRepository cartRepository;
     private final AuthUserRepository authUserRepository;
@@ -28,7 +26,7 @@ public class CartService {
     private final FoodRepository foodRepository;
     private final CartItemRepository cartItemRepository;
 
-    public CartService(SessionUser sessionUser, CartRepository cartRepository, AuthUserRepository authUserRepository, CartMapper cartMapper, FoodRepository foodRepository, CartItemRepository cartItemRepository) {
+    public CartServiceImpl(SessionUser sessionUser, CartRepository cartRepository, AuthUserRepository authUserRepository, CartMapper cartMapper, FoodRepository foodRepository, CartItemRepository cartItemRepository) {
         this.sessionUser = sessionUser;
         this.cartRepository = cartRepository;
         this.authUserRepository = authUserRepository;
@@ -45,12 +43,12 @@ public class CartService {
         return cartMapper.toDto(cart);
     }
 
-    public void addProductToCart(Integer foodId, CartItemRequestDto dto){
+    public void addProductToCart(CartItemRequestDto dto){
         Integer currentUserId = sessionUser.getId();
         AuthUser authUser = authUserRepository.findById(currentUserId)
                 .orElseThrow(() -> new AccessDeniedException("You are not registered!"));
         Cart cart = authUser.getCart();
-        Food food = foodRepository.findById(foodId)
+        Food food = foodRepository.findById(dto.foodId())
                 .orElseThrow(() -> new ResourceNotFoundException("Food not found"));
         Integer quantity = dto.quantity();
 
@@ -64,15 +62,15 @@ public class CartService {
         cartItemRepository.save(cartItem);
     }
 
-    public void updateQuantity(Integer foodId, CartItemUpdateDto dto){
-        Food food = foodRepository.findById(foodId)
+    public void updateQuantity(CartItemUpdateDto dto){
+        Food food = foodRepository.findById(dto.foodId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         Integer currentUserId = sessionUser.getId();
         AuthUser authUser = authUserRepository.findById(currentUserId)
                 .orElseThrow(() -> new AccessDeniedException("You are not registered!"));
         Cart cart = authUser.getCart();
 
-        CartItem cartItem = cartItemRepository.findByCartIdAndFoodId(cart.getId(), foodId)
+        CartItem cartItem = cartItemRepository.findByCartIdAndFoodId(cart.getId(), dto.foodId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product is not available in your cart"));
         Integer quantity = dto.quantity();
         Integer oldQuantity = cartItem.getQuantity();

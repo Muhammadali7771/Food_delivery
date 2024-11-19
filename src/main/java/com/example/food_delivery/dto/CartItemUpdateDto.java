@@ -1,4 +1,9 @@
 package com.example.food_delivery.dto;
 
-public record CartItemUpdateDto(Integer quantity) {
+import jakarta.validation.constraints.Min;
+
+public record CartItemUpdateDto(
+        Integer foodId,
+        @Min(value = 1, message = "quantity can not be negative or 0")
+        Integer quantity) {
 }

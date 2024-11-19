@@ -10,6 +10,5 @@ public record FoodCreateDto(
         String description,
         @Min(value = 0, message = "price cannot be negative")
         double price,
-        @NotBlank(message = "ingredients must not be null")
         String[] ingredients) {
 }
