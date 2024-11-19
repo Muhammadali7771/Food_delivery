@@ -9,6 +9,7 @@ public record FoodUpdateDto(
         @NotBlank(message = "description must not be blank")
         String description,
         @Min(value = 0, message = "price cannot be negative")
-        double price
+        double price,
+        String[] ingredients
 ) {
 }

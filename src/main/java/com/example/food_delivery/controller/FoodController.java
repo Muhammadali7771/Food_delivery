@@ -5,6 +5,7 @@ import com.example.food_delivery.dto.food.FoodCreateDto;
 import com.example.food_delivery.dto.food.FoodDto;
 import com.example.food_delivery.dto.food.FoodUpdateDto;
 import com.example.food_delivery.service.FoodService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,7 +43,7 @@ public class FoodController {
     @PutMapping("/food/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> update(@PathVariable Integer id,
-                                       @RequestBody FoodUpdateDto dto) {
+                                       @Valid @RequestBody FoodUpdateDto dto) {
         foodService.update(dto, id);
         return ResponseEntity.noContent().build();
     }
@@ -51,7 +52,7 @@ public class FoodController {
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public BaseResponse<Integer> save(@PathVariable Integer categoryId,
-                                      @RequestBody FoodCreateDto dto) {
+                                      @Valid @RequestBody FoodCreateDto dto) {
         Integer id = foodService.save(dto, categoryId);
         return new BaseResponse<>(id);
     }

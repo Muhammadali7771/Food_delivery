@@ -4,18 +4,17 @@ import com.example.food_delivery.dto.BaseResponse;
 import com.example.food_delivery.dto.CartDto;
 import com.example.food_delivery.dto.CartItemRequestDto;
 import com.example.food_delivery.dto.CartItemUpdateDto;
-import com.example.food_delivery.service.CartService;
-import com.fasterxml.jackson.databind.ser.Serializers;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import com.example.food_delivery.service.CartServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
 public class CartController {
-    private final CartService cartService;
+    private final CartServiceImpl cartService;
 
-    public CartController(CartService cartService) {
+    public CartController(CartServiceImpl cartService) {
         this.cartService = cartService;
     }
 
@@ -25,20 +24,20 @@ public class CartController {
         return new BaseResponse<>(myCart);
     }
 
-    @PostMapping("/add-to-cart/{foodId}")
-    public ResponseEntity<Void> addFoodToCart(@PathVariable Integer foodId,
-                                              @RequestBody CartItemRequestDto dto) {
-        cartService.addProductToCart(foodId, dto);
+    @PostMapping("/add-to-cart")
+    public ResponseEntity<Void> addFoodToCart(
+                                             @Valid @RequestBody CartItemRequestDto dto) {
+        cartService.addProductToCart(dto);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/update-cart/{foodId}")
-    public ResponseEntity<Void> updateCart(@PathVariable Integer foodId,
-                                           @RequestBody CartItemUpdateDto dto) {
-        cartService.updateQuantity(foodId, dto);
+    @PutMapping("/update-cart")
+    public ResponseEntity<Void> updateCart(
+                                           @Valid @RequestBody CartItemUpdateDto dto) {
+        cartService.updateQuantity(dto);
         return ResponseEntity.noContent().build();
     }
-    @DeleteMapping("/delete-product-to-cart/{foodId}")
+    @DeleteMapping("/delete-from-cart/{foodId}")
     public ResponseEntity<Void> deleteFoodFromCart(@PathVariable Integer foodId){
         cartService.removeProductFromCart(foodId);
         return ResponseEntity.noContent().build();
