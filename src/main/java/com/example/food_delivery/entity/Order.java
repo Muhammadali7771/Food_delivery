@@ -1,5 +1,6 @@
 package com.example.food_delivery.entity;
 
+import com.example.food_delivery.enums.ORDER_STATUS;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,5 +24,11 @@ public class Order {
     private LocalDateTime orderDateTime;
     private double totalAmount;
     @Column(nullable = false)
+    private String phoneNumber;
+    @Column(nullable = false)
+    private String fullName;
+    @Column(nullable = false)
     private String address;
+    @Enumerated(EnumType.STRING)
+    private ORDER_STATUS status;
 }
