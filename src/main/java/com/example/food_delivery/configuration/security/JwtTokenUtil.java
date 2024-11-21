@@ -52,4 +52,5 @@ public class JwtTokenUtil {
         byte[] bytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(bytes);
     }
+
 }

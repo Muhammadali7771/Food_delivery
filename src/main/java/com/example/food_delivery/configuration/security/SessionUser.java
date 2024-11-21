@@ -26,4 +26,5 @@ public class SessionUser {
         }
         return user.getId();
     }
+
 }

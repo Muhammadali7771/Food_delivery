@@ -1,11 +1,13 @@
 package com.example.food_delivery.service;
 
+import ch.qos.logback.classic.spi.EventArgUtil;
 import com.example.food_delivery.configuration.security.JwtTokenUtil;
 import com.example.food_delivery.configuration.security.SessionUser;
 import com.example.food_delivery.dto.TokenResponse;
 import com.example.food_delivery.dto.authuser.AuthUserCreateDto;
-import com.example.food_delivery.dto.authuser.AuthUserUpdateDto;
 import com.example.food_delivery.dto.authuser.AuthenticationRequest;
+import com.example.food_delivery.dto.authuser.UserUserDto;
+import com.example.food_delivery.dto.authuser.AuthUserUpdateDto;
 import com.example.food_delivery.entity.AuthUser;
 import com.example.food_delivery.entity.Cart;
 import com.example.food_delivery.enums.ROLE;
@@ -15,29 +17,35 @@ import com.example.food_delivery.exception.ResourceNotFoundException;
 import com.example.food_delivery.mapper.AuthUserMapper;
 import com.example.food_delivery.repository.AuthUserRepository;
 import com.example.food_delivery.repository.CartRepository;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthUserServiceImpl implements AuthUserService{
+public class AuthUserServiceImpl implements AuthUserService {
     private final AuthUserRepository authUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final SessionUser sessionUser;
-    private final AuthenticationManager authenticationManager;
     private final AuthUserMapper authUserMapper;
     private final JwtTokenUtil jwtTokenUtil;
     private final CartRepository cartRepository;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthUserServiceImpl(AuthUserRepository authUserRepository, PasswordEncoder passwordEncoder, SessionUser sessionUser, AuthenticationManager authenticationManager, AuthUserMapper authUserMapper, JwtTokenUtil jwtTokenUtil, CartRepository cartRepository) {
+    public AuthUserServiceImpl(AuthUserRepository authUserRepository,
+                               PasswordEncoder passwordEncoder,
+                               SessionUser sessionUser,
+                               AuthUserMapper authUserMapper,
+                               JwtTokenUtil jwtTokenUtil,
+                               CartRepository cartRepository,
+                               AuthenticationManager authenticationManager) {
         this.authUserRepository = authUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.sessionUser = sessionUser;
-        this.authenticationManager = authenticationManager;
         this.authUserMapper = authUserMapper;
         this.jwtTokenUtil = jwtTokenUtil;
         this.cartRepository = cartRepository;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -45,7 +53,7 @@ public class AuthUserServiceImpl implements AuthUserService{
         if (authUserRepository.existsByEmail(dto.email())) {
             throw new EmailAlreadyExists(dto.email() + " already exists");
         }
-        if (authUserRepository.existsByPhoneNumber(dto.phoneNumber())){
+        if (authUserRepository.existsByPhoneNumber(dto.phoneNumber())) {
             throw new PhoneNumberAlreadyExists(dto.phoneNumber() + " already exists");
         }
         AuthUser authUser = authUserMapper.toEntity(dto);
@@ -72,18 +80,26 @@ public class AuthUserServiceImpl implements AuthUserService{
     }
 
     @Override
-    public void update(AuthUserUpdateDto dto, Integer userId) {
-        AuthUser authUser = authUserRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        AuthUser authUserUpdated = authUserMapper.partialUpdate(dto, authUser);
-        authUserRepository.save(authUserUpdated);
-    }
-
-    @Override
     public AuthUser getById(Integer id) {
         return authUserRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
+    @Override
+    public void update(AuthUserUpdateDto dto) {
+        dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+        Integer id = sessionUser.getId();
+        AuthUser authUser = authUserRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        authUserMapper.partialUpdate(dto, authUser);
+        authUserRepository.save(authUser);
+    }
 
+    @Override
+    public UserUserDto getUserProfile() {
+        Integer userId = sessionUser.getId();
+        AuthUser user = authUserRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return authUserMapper.toDto(user);
+    }
 }
