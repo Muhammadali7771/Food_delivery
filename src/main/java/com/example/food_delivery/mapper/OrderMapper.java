@@ -2,7 +2,7 @@ package com.example.food_delivery.mapper;
 
 import com.example.food_delivery.dto.OrderCreateDto;
 import com.example.food_delivery.entity.Order;
-import com.example.food_delivery.entity.OrderDto;
+import com.example.food_delivery.dto.OrderDto;
 import org.mapstruct.*;
 
 import java.util.List;

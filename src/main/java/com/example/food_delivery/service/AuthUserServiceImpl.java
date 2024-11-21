@@ -78,4 +78,12 @@ public class AuthUserServiceImpl implements AuthUserService{
         AuthUser authUserUpdated = authUserMapper.partialUpdate(dto, authUser);
         authUserRepository.save(authUserUpdated);
     }
+
+    @Override
+    public AuthUser getById(Integer id) {
+        return authUserRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+
 }

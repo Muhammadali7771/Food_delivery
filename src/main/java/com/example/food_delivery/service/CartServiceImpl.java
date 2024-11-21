@@ -21,15 +21,15 @@ import org.springframework.stereotype.Service;
 public class CartServiceImpl implements CartService{
     private final SessionUser sessionUser;
     private final CartRepository cartRepository;
-    private final AuthUserRepository authUserRepository;
+    private final AuthUserService authUserService;
     private final CartMapper cartMapper;
     private final FoodRepository foodRepository;
     private final CartItemRepository cartItemRepository;
 
-    public CartServiceImpl(SessionUser sessionUser, CartRepository cartRepository, AuthUserRepository authUserRepository, CartMapper cartMapper, FoodRepository foodRepository, CartItemRepository cartItemRepository) {
+    public CartServiceImpl(SessionUser sessionUser, CartRepository cartRepository, AuthUserService authUserService, CartMapper cartMapper, FoodRepository foodRepository, CartItemRepository cartItemRepository) {
         this.sessionUser = sessionUser;
         this.cartRepository = cartRepository;
-        this.authUserRepository = authUserRepository;
+        this.authUserService = authUserService;
         this.cartMapper = cartMapper;
         this.foodRepository = foodRepository;
         this.cartItemRepository = cartItemRepository;
@@ -37,16 +37,14 @@ public class CartServiceImpl implements CartService{
 
     public CartDto getMyCart(){
         Integer currentUserId = sessionUser.getId();
-        AuthUser authUser = authUserRepository.findById(currentUserId)
-                .orElseThrow();
+        AuthUser authUser = authUserService.getById(currentUserId);
         Cart cart = authUser.getCart();
         return cartMapper.toDto(cart);
     }
 
     public void addProductToCart(CartItemRequestDto dto){
         Integer currentUserId = sessionUser.getId();
-        AuthUser authUser = authUserRepository.findById(currentUserId)
-                .orElseThrow(() -> new AccessDeniedException("You are not registered!"));
+        AuthUser authUser = authUserService.getById(currentUserId);
         Cart cart = authUser.getCart();
         Food food = foodRepository.findById(dto.foodId())
                 .orElseThrow(() -> new ResourceNotFoundException("Food not found"));
@@ -66,8 +64,7 @@ public class CartServiceImpl implements CartService{
         Food food = foodRepository.findById(dto.foodId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         Integer currentUserId = sessionUser.getId();
-        AuthUser authUser = authUserRepository.findById(currentUserId)
-                .orElseThrow(() -> new AccessDeniedException("You are not registered!"));
+        AuthUser authUser = authUserService.getById(currentUserId);
         Cart cart = authUser.getCart();
 
         CartItem cartItem = cartItemRepository.findByCartIdAndFoodId(cart.getId(), dto.foodId())
@@ -82,8 +79,7 @@ public class CartServiceImpl implements CartService{
     }
     public void removeProductFromCart(Integer foodId) {
         Integer currentUserId = sessionUser.getId();
-        AuthUser authUser = authUserRepository.findById(currentUserId)
-                .orElseThrow(() -> new AccessDeniedException("You are not registered!"));
+        AuthUser authUser = authUserService.getById(currentUserId);
         Cart cart = authUser.getCart();
 
         CartItem cartItem = cartItemRepository.findByCartIdAndFoodId(cart.getId(), foodId)
