@@ -1,5 +1,6 @@
 package com.example.food_delivery.service;
 
+import com.example.food_delivery.dto.SearchDto;
 import com.example.food_delivery.dto.food.FoodCreateDto;
 import com.example.food_delivery.dto.food.FoodDto;
 import com.example.food_delivery.dto.food.FoodUpdateDto;
@@ -61,6 +62,24 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public List<FoodDto> getAll() {
         List<Food> foodList = foodRepository.findAll();
+        return foodMapper.toDtoList(foodList);
+    }
+
+    @Override
+    public List<FoodDto> getByCategoryId(Integer categoryId) {
+        List<Food> foodList = foodRepository.findAllByCategoryId(categoryId);
+        return foodMapper.toDtoList(foodList);
+    }
+
+    @Override
+    public List<FoodDto> getFoodListByPopularity() {
+        List<Food> foodList = foodRepository.findFoodListByPopularity();
+        return foodMapper.toDtoList(foodList);
+    }
+
+    @Override
+    public List<FoodDto> getBySearchResult(SearchDto dto) {
+        List<Food> foodList = foodRepository.findAllByNameContainingIgnoreCase(dto.item());
         return foodMapper.toDtoList(foodList);
     }
 
