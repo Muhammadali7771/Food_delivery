@@ -1,9 +1,11 @@
 package com.example.food_delivery.controller;
 
 import com.example.food_delivery.dto.BaseResponse;
+import com.example.food_delivery.dto.SearchDto;
 import com.example.food_delivery.dto.food.FoodCreateDto;
 import com.example.food_delivery.dto.food.FoodDto;
 import com.example.food_delivery.dto.food.FoodUpdateDto;
+import com.example.food_delivery.entity.Food;
 import com.example.food_delivery.service.FoodService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -55,5 +57,20 @@ public class FoodController {
                                       @Valid @RequestBody FoodCreateDto dto) {
         Integer id = foodService.save(dto, categoryId);
         return new BaseResponse<>(id);
+    }
+    @GetMapping("/category/{categoryId}/foods")
+    public BaseResponse<List<FoodDto>> getFoodListByCategoryId(@PathVariable Integer categoryId){
+        return new BaseResponse<>(foodService.getByCategoryId(categoryId));
+    }
+
+    @PostMapping("/product/search")
+    public BaseResponse<List<FoodDto>> search(@RequestBody SearchDto dto){
+        return new BaseResponse<>(foodService.getBySearchResult(dto));
+    }
+
+    @GetMapping("/product/popular")
+    public BaseResponse<List<FoodDto>> findByPopularity(){
+        List<FoodDto> foodList = foodService.getFoodListByPopularity();
+        return new BaseResponse<>(foodList);
     }
 }

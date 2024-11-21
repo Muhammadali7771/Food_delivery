@@ -1,5 +1,6 @@
 package com.example.food_delivery.service;
 
+import com.example.food_delivery.dto.SearchDto;
 import com.example.food_delivery.dto.food.FoodCreateDto;
 import com.example.food_delivery.dto.food.FoodDto;
 import com.example.food_delivery.dto.food.FoodUpdateDto;
@@ -12,5 +13,8 @@ public interface FoodService {
     void delete(Integer id);
     FoodDto getById(Integer id);
     List<FoodDto> getAll();
+    List<FoodDto> getByCategoryId(Integer categoryId);
+    List<FoodDto> getFoodListByPopularity();
+    List<FoodDto> getBySearchResult(SearchDto dto);
     List<FoodDto> getAllByCategoryId(Integer categoryId);
 }
