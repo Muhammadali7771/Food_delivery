@@ -17,7 +17,11 @@ public class FeedBack {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private AuthUser authUser;
-    @Column(nullable = false)
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "order_id")
+    private Order orderId;
+
     private String message;
     private LocalDateTime sendAt;
 }
