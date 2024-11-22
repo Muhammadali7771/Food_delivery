@@ -23,7 +23,7 @@ public class FeedBackController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Void> addFeedback(@Valid @RequestBody FeedBackCreateDto feedbackCreateDto) {
+    public ResponseEntity<Void> addFeedback(@RequestBody FeedBackCreateDto feedbackCreateDto) {
         feedBackService.addFeedback(feedbackCreateDto);
         return ResponseEntity.noContent().build();
     }
@@ -35,17 +35,4 @@ public class FeedBackController {
         return new BaseResponse<>(feedbacks);
     }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public BaseResponse<FeedBackDto> getFeedbackById(@PathVariable Integer id) {
-        FeedBackDto feedback = feedBackService.getFeedbackById(id);
-        return new BaseResponse<>(feedback);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteFeedback(@PathVariable Integer id) {
-        feedBackService.deleteFeedback(id);
-        return ResponseEntity.noContent().build();
-    }
 }

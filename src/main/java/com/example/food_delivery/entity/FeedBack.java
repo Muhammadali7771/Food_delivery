@@ -20,7 +20,7 @@ public class FeedBack {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
-    private Order orderId;
+    private Order order;
 
     private String message;
     private LocalDateTime sendAt;
