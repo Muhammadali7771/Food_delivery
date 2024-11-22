@@ -1,13 +1,12 @@
 package com.example.food_delivery.service;
 
-import ch.qos.logback.classic.spi.EventArgUtil;
 import com.example.food_delivery.configuration.security.JwtTokenUtil;
 import com.example.food_delivery.configuration.security.SessionUser;
 import com.example.food_delivery.dto.TokenResponse;
 import com.example.food_delivery.dto.authuser.AuthUserCreateDto;
-import com.example.food_delivery.dto.authuser.AuthenticationRequest;
-import com.example.food_delivery.dto.authuser.UserUserDto;
+import com.example.food_delivery.dto.authuser.AuthUserDto;
 import com.example.food_delivery.dto.authuser.AuthUserUpdateDto;
+import com.example.food_delivery.dto.authuser.AuthenticationRequest;
 import com.example.food_delivery.entity.AuthUser;
 import com.example.food_delivery.entity.Cart;
 import com.example.food_delivery.enums.ROLE;
@@ -17,8 +16,8 @@ import com.example.food_delivery.exception.ResourceNotFoundException;
 import com.example.food_delivery.mapper.AuthUserMapper;
 import com.example.food_delivery.repository.AuthUserRepository;
 import com.example.food_delivery.repository.CartRepository;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -87,16 +86,16 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Override
     public void update(AuthUserUpdateDto dto) {
-        dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         Integer id = sessionUser.getId();
         AuthUser authUser = authUserRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        authUserMapper.partialUpdate(dto, authUser);
-        authUserRepository.save(authUser);
+        AuthUser authUserUpdated = authUserMapper.partialUpdate(dto, authUser);
+        authUserUpdated.setPassword(passwordEncoder.encode(authUser.getPassword()));
+        authUserRepository.save(authUserUpdated);
     }
 
     @Override
-    public UserUserDto getUserProfile() {
+    public AuthUserDto getUserProfile() {
         Integer userId = sessionUser.getId();
         AuthUser user = authUserRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));

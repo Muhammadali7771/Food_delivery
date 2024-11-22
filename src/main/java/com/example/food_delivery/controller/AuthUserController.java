@@ -1,10 +1,9 @@
 package com.example.food_delivery.controller;
 
-import com.example.food_delivery.configuration.security.SessionUser;
 import com.example.food_delivery.dto.BaseResponse;
 import com.example.food_delivery.dto.TokenResponse;
-import com.example.food_delivery.dto.authuser.UserUserDto;
 import com.example.food_delivery.dto.authuser.AuthUserCreateDto;
+import com.example.food_delivery.dto.authuser.AuthUserDto;
 import com.example.food_delivery.dto.authuser.AuthUserUpdateDto;
 import com.example.food_delivery.dto.authuser.AuthenticationRequest;
 import com.example.food_delivery.service.AuthUserService;
@@ -36,8 +35,8 @@ public class AuthUserController {
     }
 
     @GetMapping("/profile")
-    public BaseResponse<UserUserDto> getUserProfile() {
-        UserUserDto userProfile = authUserService.getUserProfile();
+    public BaseResponse<AuthUserDto> getUserProfile() {
+        AuthUserDto userProfile = authUserService.getUserProfile();
         return new BaseResponse<>(userProfile);
     }
 
