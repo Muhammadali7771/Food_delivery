@@ -3,8 +3,10 @@ package com.example.food_delivery.service;
 import com.example.food_delivery.configuration.security.SessionUser;
 import com.example.food_delivery.dto.OrderCreateDto;
 import com.example.food_delivery.dto.OrderDto;
+import com.example.food_delivery.dto.OrderStatusDto;
 import com.example.food_delivery.entity.*;
 import com.example.food_delivery.enums.ORDER_STATUS;
+import com.example.food_delivery.exception.ResourceNotFoundException;
 import com.example.food_delivery.mapper.OrderMapper;
 import com.example.food_delivery.repository.*;
 import org.springframework.stereotype.Service;
@@ -60,5 +62,17 @@ public class OrderServiceImpl implements OrderService {
         Integer currentUserId = sessionUser.getId();
         List<Order> orders = orderRepository.findOrderAllByAuthUserId(currentUserId);
         return orderMapper.toDto(orders);
+    }
+
+    public List<OrderDto> getAllOrders(){
+        List<Order> orders = orderRepository.findAll();
+        return orderMapper.toDto(orders);
+    }
+
+    public void changeOrderStatus(OrderStatusDto dto){
+        Order order = orderRepository.findById(dto.id())
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        order.setStatus(dto.status());
+        orderRepository.save(order);
     }
 }
