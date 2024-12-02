@@ -1,10 +1,17 @@
 package com.example.food_delivery.configuration.security;
 
 import com.example.food_delivery.dto.ErrorData;
+import com.example.food_delivery.repository.AuthUserRepository;
+import com.example.food_delivery.repository.CartRepository;
+import com.example.food_delivery.service.AuthUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -14,12 +21,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -28,13 +39,20 @@ public class SecurityConfiguration {
     private final ObjectMapper objectMapper;
     private final JwtTokenUtil jwtTokenUtil;
     private final UserDetailsService userDetailsService;
-    private final static String[] WHITE_LIST = {"/swagger-ui/**", "/api/auth/**", "/v3/api-docs/**", "/error"};
+    private final CartRepository cartRepository;
+    private final AuthUserRepository authUserRepository;
 
-    public SecurityConfiguration(ObjectMapper objectMapper, JwtTokenUtil jwtTokenUtil, UserDetailsService userDetailsService) {
+    public SecurityConfiguration(ObjectMapper objectMapper, JwtTokenUtil jwtTokenUtil, UserDetailsService userDetailsService, CartRepository cartRepository, AuthUserRepository authUserRepository) {
         this.objectMapper = objectMapper;
         this.jwtTokenUtil = jwtTokenUtil;
         this.userDetailsService = userDetailsService;
+        this.cartRepository = cartRepository;
+        this.authUserRepository = authUserRepository;
     }
+
+    private final static String[] WHITE_LIST = {"/swagger-ui/**", "/api/auth/**", "/v3/api-docs/**", "/error", "/oauth2/**", "/login/oauth2/code/google"};
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.
@@ -46,7 +64,14 @@ public class SecurityConfiguration {
                 .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint()))
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2LoginSuccessHandler(jwtTokenUtil, authUserRepository, cartRepository))
+                )
                 .build();
+    }
+    @Bean
+    public OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler(JwtTokenUtil jwtTokenUtil, AuthUserRepository authUserRepository, CartRepository cartRepository) {
+        return new OAuth2LoginSuccessHandler(jwtTokenUtil, authUserRepository, cartRepository);
     }
 
     @Bean

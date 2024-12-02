@@ -7,6 +7,7 @@ import com.example.food_delivery.exception.PhoneNumberAlreadyExists;
 import com.example.food_delivery.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -34,6 +35,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(ResourceNotFoundException.class)
     public BaseResponse<Void> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request){
+        ErrorData errorData = new ErrorData(e.getMessage(), request.getRequestURI());
+        return new BaseResponse<>(errorData);
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AccessDeniedException.class)
+    public BaseResponse<Void> tokenInvalid(AccessDeniedException e, HttpServletRequest request){
         ErrorData errorData = new ErrorData(e.getMessage(), request.getRequestURI());
         return new BaseResponse<>(errorData);
     }

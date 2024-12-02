@@ -20,9 +20,9 @@ public class AuthUser {
     private String name;
     @Column(unique = true, nullable = false)
     private String email;
-    @Column(nullable = false)
+
     private String password;
-    @Column(unique = true, nullable = false)
+
     private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private ROLE role;
